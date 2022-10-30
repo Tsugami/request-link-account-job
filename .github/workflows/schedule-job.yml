@@ -1,4 +1,4 @@
-name: Rust
+name: Job
 
 on:
   schedule:
@@ -16,4 +16,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run
-        run: cargo run
+        run: docker run ghcr.io/tsugami/send-message-to-kelbi:master
