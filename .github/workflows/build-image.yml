@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - master
 
 env:
   IMAGE_NAME: send-message-to-kelbi
