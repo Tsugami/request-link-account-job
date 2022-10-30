@@ -46,7 +46,7 @@ async fn main() {
 
     println!("{}", query);
     let rows = sqlx::query(&query)
-        .fetch_all(&pool) // -> Vec<{ country: String, count: i64 }>
+        .fetch_all(&pool)
         .await
         .expect("query for get discord_id of current char's failed");
 
@@ -56,24 +56,34 @@ async fn main() {
         .filter(|id| !linked_users.contains(id))
         .collect::<Vec<i32>>();
 
-    let mut body = HashMap::new();
-    body.insert("content", "você sabia que pode vincular a sua conta com o Discord? Vá para o servidor do Discord em INSTALAÇÃO E GUIAS -> CONECTAR-FRONTIER -> LOGIN COM DISCORD");
-    body.insert("sender_name", "Mirim");
+    let send = |id: i32, sender_name: &str, content: &str| {
+        let mut body = HashMap::new();
+        body.insert("content", content);
+        body.insert("sender_name", sender_name);
 
-    for id in unlink_users {
-        match client
+        client
             .post(format!("{}/send-message/{}", api_uri, id))
             .header("access_token", &access_token)
             .json(&body)
             .send()
-            .await
-        {
-            Ok(res) => match res.status() {
-                StatusCode::OK => println!("Enviado para {}.", id),
-                StatusCode::NOT_FOUND => (),
-                _ => println!("Err {:?}", res),
-            },
-            Err(er) => println!("Err {}", er),
+    };
+
+    let messages = [
+        "Sabia que pode vincular a sua conta com o Discord?",
+        "No nosso servidor do Discord, entre no canal",
+        "INSTALACAO E GUIAS > CONECTAR-FRONTIER > LOGIN COM DISCORD",
+    ];
+
+    for id in unlink_users {
+        for m in messages {
+            match send(id, "Mirim", m).await {
+                Ok(res) => match res.status() {
+                    StatusCode::OK => println!("Enviado para {}.", id),
+                    StatusCode::NOT_FOUND => (),
+                    _ => println!("Err {:?}", res),
+                },
+                Err(er) => println!("Err {}", er),
+            }
         }
     }
 }
