@@ -16,4 +16,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Run
-        run: docker run ghcr.io/tsugami/send-message-to-kelbi:master
+        run: docker run -e API_URI=$API_URI -e DATABASE_URL=$DATABASE_URL -e ACCESS_TOKEN=$ACCESS_TOKEN ghcr.io/tsugami/send-message-to-kelbi:master
