@@ -1,5 +1,5 @@
 [package]
-name = "kelbi_connect_account_schedule_job"
+name = "send-message-to-kelbi"
 version = "0.1.0"
 edition = "2021"
 
