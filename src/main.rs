@@ -21,8 +21,6 @@ async fn main() {
     let client = reqwest::Client::new();
 
     let uri = format!("{}/current-chars", api_uri);
-    println!("{}", uri);
-
     let resp = client
         .get(uri)
         .header("access_token", &access_token)
