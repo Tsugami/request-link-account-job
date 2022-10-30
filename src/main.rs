@@ -6,11 +6,11 @@ use sqlx::{postgres::PgPoolOptions, Row};
 
 #[tokio::main]
 async fn main() {
-    dotenv().unwrap();
+    dotenv().ok();
 
-    let database_uri = env::var("DATABASE_URL").unwrap();
-    let api_uri = env::var("API_URI").unwrap();
-    let access_token = env::var("ACCESS_TOKEN").unwrap();
+    let database_uri = env::var("DATABASE_URL").expect("DATABASE_URL not found.");
+    let api_uri = env::var("API_URI").expect("API_URI not found.");
+    let access_token = env::var("ACCESS_TOKEN").expect("ACCESS_TOKEN not found.");
 
     let pool = PgPoolOptions::new()
         .max_connections(5)
