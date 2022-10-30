@@ -44,7 +44,6 @@ async fn main() {
         ", ids,
     );
 
-    println!("{}", query);
     let rows = sqlx::query(&query)
         .fetch_all(&pool)
         .await
