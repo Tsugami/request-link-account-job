@@ -41,7 +41,7 @@ async fn main() {
         .join(",");
 
     let query = format!("
-        SELECT c.id FROM characters c JOIN user_connections uc ON uc.user_id = c.id WHERE c.id IN ({})
+        SELECT c.id FROM characters c JOIN user_connections uc ON uc.user_id = c.user_id WHERE c.id IN ({})
         ", ids,
     );
 
