@@ -5,6 +5,9 @@ on:
     - cron: "0 0-23 * * *"
 env:
   CARGO_TERM_COLOR: always
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  API_URI: ${{ secrets.API_URI }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
 jobs:
   build:
