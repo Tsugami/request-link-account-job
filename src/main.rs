@@ -33,6 +33,10 @@ async fn main() {
         .await
         .expect("api returns unexpected current chats data");
 
+    if online_char_ids.is_empty() {
+        return;
+    }
+
     let ids = online_char_ids
         .clone()
         .into_iter()
