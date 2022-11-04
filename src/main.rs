@@ -12,23 +12,15 @@ async fn main() {
     let api_uri = env::var("API_URI").expect("API_URI not found.");
     let access_token = env::var("ACCESS_TOKEN").expect("ACCESS_TOKEN not found.");
 
-    let pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&database_uri)
-        .await
-        .expect("connect database failed");
-
     let client = reqwest::Client::new();
 
     let uri = format!("{}/current-chars", api_uri);
-    let resp = client
+    let online_char_ids = client
         .get(uri)
         .header("access_token", &access_token)
         .send()
         .await
-        .expect("get current char's failed, check api.");
-
-    let online_char_ids = resp
+        .expect("get current char's failed, check api.")
         .json::<Vec<i32>>()
         .await
         .expect("api returns unexpected current chats data");
@@ -36,6 +28,12 @@ async fn main() {
     if online_char_ids.is_empty() {
         return;
     }
+
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_uri)
+        .await
+        .expect("connect database failed");
 
     let ids = online_char_ids
         .clone()
@@ -49,12 +47,14 @@ async fn main() {
         ", ids,
     );
 
-    let rows = sqlx::query(&query)
+    let linked_users = sqlx::query(&query)
         .fetch_all(&pool)
         .await
-        .expect("query for get discord_id of current char's failed");
+        .expect("query for get discord_id of current char's failed")
+        .iter()
+        .map(|row| row.get("id"))
+        .collect::<Vec<i32>>();
 
-    let linked_users = rows.iter().map(|row| row.get("id")).collect::<Vec<i32>>();
     let unlink_users = online_char_ids
         .into_iter()
         .filter(|id| !linked_users.contains(id))
